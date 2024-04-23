@@ -5,7 +5,85 @@
   </head>
   <body>
     <h1>
-      GENOVEVA
+      # **Análisis de la frecuencia en el uso de dispositivos tecnológicos**
+- - -
+
+## 1. Objetivo.
+
+Obtener información respecto a la frecuencia de uso de dispositivos tecnológicos y el tiempo invertido en la realización de tareas o trabajos escolares, en proporcionalidad con la edad y el grado de escolaridad. 
+
+
+## 2. Justificación.
+
+El presente análisis expone datos, por edad y escolaridad, respecto a la frecuencia en el uso de dispositivos como smartphone y laptop, para poder verificar si el grado académico influye en el tiempo que se invierte en la realización de tareas o trabajos escolares.
+
+
+## 3. Análisis exploratorio de los datos (estadística descriptiva).
+
+De conformidad con la Encuesta Nacional sobre el uso y disponibilidad de las TIC en los hogares, realizada por el INEGI, en 2021 el uso de teléfonos inteligentes para la realización de actividdes escolares ha aumentado, en comparación con el uso de equipos portátiles.
+
+Para llevar a cabo el análisis de los datos se ralizaron los siguientes pasos:
+
+- Extracción del archivo origen del portal del INEGI.
+- Cambio de nombre al archivo.
+- Creación de subset con las columnas necesarias (solo seis datos).
+- Renombre de columnas para una mejor identificación de los datos.
+- Visualización de las primeras filas del nuevo dataframe.
+
+Como se muestra a continuación:
+
+```{r}
+datos <- read.csv("conjunto_de_datos_tmodulo_enape_2021.csv")
+head(datos)
+  
+datos_filtrados <- subset(datos, select = c(FOLIO, EDAD, PB3_12_1, PB3_12_2, PB3_14, ESC))
+head(datos_filtrados)
+
+names(datos_filtrados) <- c("Id", "Edad", "Uso_smartphone", "Uso_laptop", "Horas_dedicadas","Escolaridad")
+head(datos_filtrados)
+
+```
+
+## 4. Análisis estadístico inferencial.
+
+Como se puede apreciar, se consideraron únicamente seis datos de la muestra de personas entrevistadas y se utilizó esta información para hacer una inferencia sobre el uso del smartphone y laptop, las horas dedicadas y la escolaridad para establecer si esta influye en el uso de los dispositivos en mención.
+
+- Se realizó una prueba de correlación entre años cumplidos y horas dedicadas a la realización de tareas.
+- Se realizó una prueba de corelación entre el uso de smartphone y el uso de laptop.
+- Se realizó una prueb de ANOVA para comparar las horas dedicadas las tareas escolares entre los niveles de escolaridad.
+- Se realizó una tabla de frecuencias de uso de smartphone y laptop.
+
+```{r}
+cor.test(datos_filtrados$Edad, datos_filtrados$Horas_dedicadas)
+
+cor.test(datos_filtrados$Uso_smartphone, datos_filtrados$Uso_laptop)
+
+modelo_anova <- aov(Horas_dedicadas ~ Escolaridad, data = datos_filtrados)
+summary(modelo_anova)
+
+tabla_frecuencias <- table(datos_filtrados$Uso_smartphone, datos_filtrados$Uso_laptop)
+tabla_frecuencias
+```
+
+## 5. Resultados (tablas, gráficas, interpretación)
+```{r}
+library(ggplot2)
+ggplot(datos_filtrados, aes(x = Escolaridad)) +
+  geom_bar(fill = "blue") +
+  labs(title = "Nivel de escolaridad alcanzado", x = "Escolaridad", y = "Frecuencia")
+
+
+ggplot(datos_filtrados, aes(x = Edad, y = Horas_dedicadas)) +
+  geom_point() +
+  labs(title = "Relación entre Edad y Horas dedicadas al Estudio", x = "Edad", y = "Horas dedicadas")
+
+
+ggplot(datos_filtrados, aes(x = Uso_smartphone, fill = Uso_laptop)) +
+  geom_bar(position = "stack") +
+  labs(title = "Uso de Smartphone y Laptop", x = "Uso de Smartphone", y = "Frecuencia") +
+  scale_fill_manual(values = c("#AC769E", "blue"))
+
+```
     </h1>
   </body>
 </html>
